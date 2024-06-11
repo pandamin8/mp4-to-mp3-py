@@ -15,6 +15,8 @@ def convert_mp4_to_mp3():
         return jsonify({'error': 'No mp4 part'}), 400
     if 'path' not in request.form:
         return jsonify({'error': 'No path part'}), 400
+    if 'directory' not in request.form:
+        return jsonify({ 'error': 'No directory part' }), 400
 
     file = request.files['mp4']
     
@@ -25,6 +27,14 @@ def convert_mp4_to_mp3():
     path = request.form.get('path')
     base_dir = os.getenv('IMAGES_BASE_DIRECTORY')
     output_file_path = base_dir + path
+
+    directory_path = base_dir + '/' + request.form.get('directory')
+
+    # Create directory if not exist
+    os.makedirs(directory_path, exist_ok=True)
+
+    print('path ', path)
+    print('output path ', output_file_path)
 
     # Save the uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_file:
@@ -48,6 +58,6 @@ def convert_mp4_to_mp3():
 
 if __name__ == '__main__':
     from waitress import serve
-    port = os.getenv('PORT', '5000')  # Default to port 5000 if not specified
+    port = os.getenv('PORT', '5001')  # Default to port 5000 if not specified
     print('server is running on port : ' + port)
     serve(app, host="0.0.0.0", port=int(port))
