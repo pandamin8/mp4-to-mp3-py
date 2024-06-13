@@ -43,9 +43,12 @@ def convert_mp4_to_mp3():
         print('temp file name', temp_file.name)
     
     try:
-        # Process the video to extract audio
-        video = mp.VideoFileClip(temp_file_path)
-        audio = video.audio
+        try:
+            video = mp.VideoFileClip(temp_file_path)
+            audio = video.audio
+        except KeyError:
+            # If there is no video stream, handle as audio only
+            audio = mp.AudioFileClip(temp_file_path)
 
         # Save the audio to the specified output path
         audio.write_audiofile(output_file_path)
